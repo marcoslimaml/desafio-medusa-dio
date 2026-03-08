@@ -1,16 +1,16 @@
-#Auditoria de Segurança com Medusa: Simulação de Ataques de Força Bruta
+# Auditoria de Segurança com Medusa: Simulação de Ataques de Força Bruta
 >Este projeto documenta a implementação de um laboratório de testes de penetração utilizando Kali Linux e a ferramenta Medusa para auditar serviços em um ambiente vulnerável (Metasploitable 2). O objetivo é demonstrar tecnicamente como ataques de força bruta ocorrem e como mitigá-los.
 
-##OBSERVAÇÃO: O objetivo é puramente educacional e de conformidade com práticas de Ethical Hacking.
+## OBSERVAÇÃO: O objetivo é puramente educacional e de conformidade com práticas de Ethical Hacking.
 
-1. Configuração do Ambiente:
+# 1. Configuração do Ambiente:
 Para garantir a segurança do seu host, utilizamos uma rede isolada.
 - **Hipervisor:** VirtualBox.
 - **Atacante:** Kali Linux (IP: 192.168.56.101).
 - **Alvo:** Metasploitable 2 (IP: 192.168.56.102).
 - **Rede:** Host-Only (VirtualBox) para isolamento total.
 
-2. Enumeração:
+# 2. Enumeração:
 Antes do ataque, foi realizada a descoberta de serviços ativos no alvo:
 
 ```Bash
@@ -20,7 +20,7 @@ nmap -sV 192.168.56.102
 ```
 **Imagem:** `https://github.com/marcoslimaml/desafio-medusa-dio/blob/main/1.png`
 
-3. Preparação: Wordlists.
+# 3. Preparação: Wordlists.
 Antes de iniciar o Medusa, foram criadas as listas para o teste:
 
 ```Bash
@@ -31,12 +31,13 @@ echo -e "admin\nuser\nmsfadmin\nroot" > users.txt
 *Criando lista de senhas* 
 echo -e "123456\npassword\nmsfadmin\nqwerty\nadmin123" > passwords.txt
 ```
+
 **Imagem:** `https://github.com/marcoslimaml/desafio-medusa-dio/blob/main/2.png`
 
-4. Execução dos Ataques com Medusa:
+# 4. Execução dos Ataques com Medusa:
 O Medusa é uma ferramenta modular e veloz para força bruta em serviços de rede.
 
-### Força Bruta em FTP (Porta 21):
+## Força Bruta em FTP (Porta 21):
 Utilizou-se o Medusa para testar combinações de usuários e senhas contra o serviço de transferência de arquivos.
 
 ```Bash
@@ -53,12 +54,13 @@ ftp 192.168.56.102
 usuário: msfadmin e senha: msfadmin 
 
 *Com isso obtivemos o acesso ao sistema de FTP.*
- ```
+```
+
 **Imagem:** `https://github.com/marcoslimaml/desafio-medusa-dio/blob/main/3.png`
 
 **Imagem:** `https://github.com/marcoslimaml/desafio-medusa-dio/blob/main/3-2.png`
 
-### Password Spraying em SMB (Porta 445):
+## Password Spraying em SMB (Porta 445):
 O Password Spraying testa uma única senha comum contra vários usuários para evitar o bloqueio de contas. Primeiro, enumeramos usuários via enum4linux, depois utilizamos a nossa lista que será criada após a enumeração.
  
 ```Bash
@@ -88,6 +90,7 @@ msfadmin
 
 *Com isso obtivemos o acesso ao sistema de SMB.*
 ```
+
 **Imagem:** `https://github.com/marcoslimaml/desafio-medusa-dio/blob/main/4.png`
 
 **Imagem:** `https://github.com/marcoslimaml/desafio-medusa-dio/blob/main/4-2.png`
@@ -98,7 +101,7 @@ msfadmin
 
 **Imagem:** `https://github.com/marcoslimaml/desafio-medusa-dio/blob/main/4-5.png`
 
-### Ataque a Formulário Web (DVWA):
+## Ataque a Formulário Web (DVWA):
 Simulação de ataque contra a interface administrativa do Damn Vulnerable Web Application (DVWA).
  
 ```Bash
@@ -120,13 +123,13 @@ medusa -h 192.168.56.102 -U dvwa_users.txt -P senhas_dvwa.txt -M http -t 6
 
 **Imagem:** `https://github.com/marcoslimaml/desafio-medusa-dio/blob/main/5-2.png`
 
-5. Documentação e Validação:
+## 5. Documentação e Validação:
 - Vetor de Ataque: **FTP**, **SMB**, **HTTP Form**.
 - Ferramenta:  Medusa (-M ftp), Medusa (-M smbnt), Medusa (-M http).
 - Resultado Esperado: **Sucesso: msfadmin:msfadmin**, **Identificação de conta root**, **Login no painel administrativo**.
 - Validação: `ftp 192.168.56.102`, `smbclient -L //192.168.56.102`, `Acesso via navegador Kali`. 
 
-6. Medidas de Prevenção e Mitigação:
+## 6. Medidas de Prevenção e Mitigação:
 Para proteger ambientes reais contra as técnicas exercitadas:
 - **Políticas de Bloqueio (Account Lockout):** Implementar mecanismos que bloqueiem o IP ou a conta após 3 a 5 tentativas falhas (ex: fail2ban no Linux).
 - **Autenticação Multi-Fator (MFA):** Essencial para mitigar password spraying, pois a senha sozinha não garante o acesso.
